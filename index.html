@@ -190,6 +190,36 @@
 				opacity: 0;
 			}
 		}
+			
+		.pagination {
+			position: fixed;
+			bottom: 20px;
+			left: 50%;
+			transform: translateX(-50%);
+			display: flex;
+			gap: 8px;
+			z-index: 1000;
+			padding: 8px 12px;
+			background: rgba(0, 0, 0, 0.2);
+			backdrop-filter: blur(5px);
+			-webkit-backdrop-filter: blur(5px);
+			border-radius: 20px;
+		}
+		
+		.dot {
+			width: 8px;
+			height: 8px;
+			background: rgba(255, 255, 255, 0.4);
+			border-radius: 50%;
+			cursor: pointer;
+			transition: all 0.3s ease;
+		}
+		
+		.dot.active {
+			background: #fff;
+			transform: scale(1.3);
+			box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+		}
     </style>
 </head>
 <body>
@@ -366,30 +396,79 @@
 				id="loveBtn">
 			For You ❤️
 		</button>
+		
+		<div class="pagination" id="pagination"></div>
 </div>
 
 
 <script>
     const slider = document.getElementById('slider');
     const slides = document.querySelectorAll('.slide');
+    const pagination = document.getElementById('pagination');
     const loveBtn = document.getElementById('loveBtn');
-    let heartInterval = null; 
+    let heartInterval = null;
 
-    
+    // --- 1. 自動產生分頁點 ---
+    slides.forEach((_, index) => {
+        const dot = document.createElement('div');
+        dot.className = 'dot' + (index === 0 ? ' active' : '');
+        dot.onclick = () => {
+            slider.scrollTo({
+                left: index * window.innerWidth,
+                behavior: 'smooth'
+            });
+        };
+        pagination.appendChild(dot);
+    });
+
+    const dots = document.querySelectorAll('.dot');
+
+    // --- 2. 監聽滾動事件 ---
+    slider.addEventListener('scroll', () => {
+        let currentSlide = Math.round(slider.scrollLeft / window.innerWidth);
+        
+        // 更新照片與文字的 active 狀態
+        slides.forEach((slide, index) => {
+            if (index === currentSlide) {
+                slide.classList.add('active');
+                dots[index].classList.add('active'); // 同步亮起點點
+            } else {
+                slide.classList.remove('active');
+                dots[index].classList.remove('active');
+            }
+        });
+
+        // 處理最後一頁 (Index 17)
+        if (currentSlide === 17) {
+            if (loveBtn.style.display !== 'block') {
+                loveBtn.style.display = 'block';
+                loveBtn.style.animation = 'fadeIn 1s forwards';
+            }
+            if (!heartInterval) {
+                heartInterval = setInterval(createHeart, 300);
+            }
+        } else {
+            loveBtn.style.display = 'none';
+            if (heartInterval) {
+                clearInterval(heartInterval);
+                heartInterval = null;
+            }
+        }
+    }, { passive: true });
+
+    // --- 3. 原本的愛心與訊息邏輯 (保持不變) ---
     function createHeart() {
         const heart = document.createElement('div');
-        // 你可以換成 '🌸' (花瓣) 或 '❄️' (雪花)
         heart.innerHTML = '❤️'; 
         heart.style.position = 'fixed';
         heart.style.bottom = '-50px';
         heart.style.left = Math.random() * 100 + 'vw';
-        heart.style.fontSize = (Math.random() * 10 + 20) + 'px'; 
+        heart.style.fontSize = (Math.random() * 10 + 20) + 'px';
         heart.style.color = '#ff4757';
-        heart.style.zIndex = '1000';
+        heart.style.zIndex = '900'; // 稍微低於點點，不干擾點選
         heart.style.pointerEvents = 'none';
         
-        
-        const duration = Math.random() * 2 + 3 + 's'; 
+        const duration = Math.random() * 2 + 3 + 's';
         const drift = (Math.random() - 0.5) * 200 + 'px';
         
         heart.animate([
@@ -403,38 +482,6 @@
         document.body.appendChild(heart);
         setTimeout(() => heart.remove(), parseFloat(duration) * 1000);
     }
-
-    slider.addEventListener('scroll', () => {
-        let currentSlide = Math.round(slider.scrollLeft / window.innerWidth);
-        
-        slides.forEach((slide, index) => {
-            if (index === currentSlide) {
-                slide.classList.add('active');
-            } else {
-                slide.classList.remove('active');
-            }
-        });
-
-        
-        if (currentSlide === 17) {
-            
-            if (loveBtn.style.display !== 'block') {
-                loveBtn.style.display = 'block';
-                loveBtn.style.animation = 'fadeIn 1s forwards';
-            }
-            
-            if (!heartInterval) {
-                heartInterval = setInterval(createHeart, 300);
-            }
-        } else {
-            
-            loveBtn.style.display = 'none';
-            if (heartInterval) {
-                clearInterval(heartInterval);
-                heartInterval = null;
-            }
-        }
-    }, { passive: true });
 
     function showSecretMessage() {
         alert("Distance is just a test to see how far love can travel. \n\nขอบคุณที่อยู่ข้างกันนะ (謝謝妳在我身邊)\n\nI love you more than words can say! ❤️");
