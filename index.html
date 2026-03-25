@@ -13,7 +13,6 @@
             background-color: #000;
         }
 
-        /* 滑動容器 */
         .slider-container {
             display: flex;
             overflow-x: auto;
@@ -23,7 +22,6 @@
         }
         .slider-container::-webkit-scrollbar { display: none; }
 
-        /* 每一頁的基礎樣式 */
         .slide {
             min-width: 100vw;
             height: 100vh;
@@ -37,41 +35,51 @@
             box-sizing: border-box;
         }
 
-        /* 照片樣式：拍立得質感 */
-        /* 修正版照片樣式：確保直向照片完整顯示 */
-        .slide img {
-            width: auto;          /* 寬度自動，根據比例縮放 */
-            max-width: 90%;       /* 最寬不超過螢幕 90% */
-            height: auto;         /* 高度自動 */
-            max-height: 65vh;     /* 最高不超過螢幕高度的 65%，留空間給文字 */
-            object-fit: contain;  /* 核心修改：縮放以適應容器，不裁切 */
-            border: 8px solid white;
-            border-bottom: 40px solid white; /* 拍立得白邊 */
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            border-radius: 4px;
-            display: block;       /* 確保置中 */
+        /* 照片進入動畫 */
+        @keyframes photoEnter {
+            0% { transform: scale(0.9) translateY(30px); opacity: 0; }
+            100% { transform: scale(1) rotate(var(--rot)) translateY(0); opacity: 1; }
         }
-        .slide:nth-child(even) img { transform: rotate(2deg); }
 
-        /* 文字方塊：毛玻璃效果 */
+        .slide img {
+            width: auto;
+            max-width: 85%;
+            height: auto;
+            max-height: 60vh;
+            object-fit: contain;
+            border: 8px solid white;
+            border-bottom: 45px solid white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-radius: 2px;
+            animation: photoEnter 1.5s cubic-bezier(0.1, 0.9, 0.2, 1) both;
+        }
+
+        /* 隨機旋轉角度 */
+        .slide:nth-child(1n) img { --rot: -1.5deg; }
+        .slide:nth-child(2n) img { --rot: 2deg; }
+        .slide:nth-child(3n) img { --rot: -2.5deg; }
+
         .caption {
-            margin-top: -20px;
-            width: 80%;
+            margin-top: 15px;
+            width: 85%;
             padding: 20px;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
             color: white;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
             z-index: 10;
+            animation: fadeIn 1.8s ease-out 0.8s both;
         }
 
-        .caption h2 { margin: 0 0 10px; font-size: 1.2rem; letter-spacing: 2px; }
-        .caption p { margin: 0; font-size: 0.95rem; line-height: 1.6; opacity: 0.9; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* 背景顏色定義 (15種漸層) */
+        .caption h2 { margin: 0 0 8px; font-size: 1.1rem; letter-spacing: 1px; color: #fff; }
+        .caption p { margin: 0; font-size: 0.9rem; line-height: 1.5; opacity: 0.95; color: #eee; }
+
+        /* 背景漸層顏色 */
         .bg1 { background: linear-gradient(135deg, #ffafbd, #ffc3a0); }
         .bg2 { background: linear-gradient(135deg, #2193b0, #6dd5ed); }
         .bg3 { background: linear-gradient(135deg, #ee9ca7, #ffdde1); }
@@ -87,21 +95,16 @@
         .bg13 { background: linear-gradient(135deg, #da22ff, #9733ee); }
         .bg14 { background: linear-gradient(135deg, #348f50, #56b4d3); }
         .bg15 { background: linear-gradient(135deg, #f7971e, #ffd200); }
-		.bg15 { background: linear-gradient(135deg, #f7971e, #ffd200); }
-        .bg16 { background: linear-gradient(135deg, #859398, #283048); } /* 深邃星空 */
-        .bg17 { background: linear-gradient(135deg, #ff9a9e, #fecfef); } /* 甜美粉紅 */
-        .bg18 { background: linear-gradient(135deg, #a1c4fd, #c2e9fb); } /* 寧靜天空 */
+        .bg16 { background: linear-gradient(135deg, #859398, #283048); }
+        .bg17 { background: linear-gradient(135deg, #ff9a9e, #fecfef); }
+        .bg18 { background: linear-gradient(135deg, #a1c4fd, #c2e9fb); }
 
-        /* 提示動畫 */
         .hint {
-            position: absolute;
-            bottom: 30px;
-            color: rgba(255,255,255,0.6);
-            font-size: 0.7rem;
-            letter-spacing: 3px;
+            position: absolute; bottom: 30px;
+            color: rgba(255,255,255,0.7); font-size: 0.7rem;
             animation: bounce 2s infinite;
         }
-        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateX(0);} 40% {transform: translateX(-10px);} 60% {transform: translateX(-5px);} }
+        @keyframes bounce { 0%, 100% {transform: translateX(0);} 50% {transform: translateX(-10px);} }
     </style>
 </head>
 <body>
@@ -110,17 +113,17 @@
 
     <div class="slide bg1">
         <div class="caption" style="background: none; box-shadow: none;">
-            <h1 style="font-size: 2.5rem; margin-bottom: 0;">365 Days</h1>
-            <p>跨越距離，只為與妳相遇</p>
+            <h1 style="font-size: 2.2rem; margin-bottom: 0; color: white;">Our 365 Days</h1>
+            <p>A journey of love across the distance.</p>
         </div>
-        <div class="hint">往左滑動開啟我們的故事 ➔</div>
+        <div class="hint">Swipe to see our story ➔</div>
     </div>
 
     <div class="slide bg2">
         <img src="https://truth.bahamut.com.tw/s01/202603/047a779de3612738fdc957b2d0418773.JPG" alt="Photo 2">
         <div class="caption">
-            <h2>第一次見面</h2>
-            <p>在那段最漫長的等待後，終於在機場見到了妳。那顆狂跳的心，在看到妳笑容的那一刻，終於找到了歸屬。</p>
+            <h2>Our First Meet</h2>
+            <p>July 10, 2025. Finally meeting you at the airport. My heart found its home the moment I saw your smile.</p>
         </div>
     </div>
 
@@ -128,126 +131,128 @@
         <img src="https://truth.bahamut.com.tw/s01/202603/1f478c79f6831650971e7fa401cf3694.JPG" alt="Photo 3">
         <div class="caption">
             <h2>Safari World</h2>
-            <p>只要身邊的人是妳，世界就是最棒的遊樂場。謝謝妳陪著我，開啟這場屬於我們的冒險。</p>
+            <p>With you, the world is the best playground. Thank you for being part of this beautiful adventure.</p>
         </div>
     </div>
 
     <div class="slide bg4">
         <img src="https://truth.bahamut.com.tw/s01/202603/26156aeac9200539ce1e1fbfcee4fcd4.JPG" alt="Photo 4">
         <div class="caption">
-            <h2>愜意的小島時光</h2>
-            <p>在那座靜謐的小島上，時間彷彿為了我們而停留。與妳共度的每個瞬間，都是我記憶裡最美的風景。</p>
+            <h2>Tranquil Island</h2>
+            <p>Time seemed to stop just for us. Every second with you is my favorite memory.</p>
         </div>
     </div>
 
     <div class="slide bg5">
         <img src="https://truth.bahamut.com.tw/s01/202603/492ee552737025e2dee46ddcba815a0d.JPG" alt="Photo 5">
         <div class="caption">
-            <h2>第二次見面，妳帶我去祈福</h2>
-            <p>看著妳虔誠的模樣，我也在心裡悄悄許願：希望未來的每個春夏秋冬，都有妳在身旁。</p>
+            <h2>Making Merit Together</h2>
+            <p>Seeing you pray was so beautiful. I hope to be by your side through every season. <br><b>ขอให้เราอยู่ด้วยกันแบบนี้ตลอดไปนะ</b></p>
         </div>
     </div>
 
     <div class="slide bg6">
         <img src="https://truth.bahamut.com.tw/s01/202603/fcf68de4aa3838b05057d21521150fa6.JPG" alt="Photo 6">
         <div class="caption">
-            <h2>命中註定的緣分</h2>
-            <p>謝謝這份祈福，讓在不同城市的我們能夠相遇。或許這就是最好的安排，讓我們學會珍惜彼此。</p>
+            <h2>Meant to Be</h2>
+            <p>Fate brought us together from different worlds. I cherish every moment we share.<br><b>พรหมลิขิตที่ทำให้เรามาเจอกัน</b></p>
         </div>
     </div>
 
     <div class="slide bg7">
         <img src="https://truth.bahamut.com.tw/s01/202603/872a8d4e7aa66626f6beb9be7da9ea7d.JPG" alt="Photo 7">
         <div class="caption">
-            <h2>漫步在東芭樂園 Nong Nooch</h2>
-            <p>穿梭在翠綠的植物間，連空氣都變得甜甜的。感覺周圍的花草，都在為我們的相遇而開心。</p>
+            <h2>Nong Nooch Garden</h2>
+            <p>Walking through the greens, the air felt sweet. Even nature was happy for our encounter.</p>
         </div>
     </div>
 
     <div class="slide bg8">
         <img src="https://truth.bahamut.com.tw/s01/202603/ab873ffc203e8b20c592bd76b38b0abe.JPG" alt="Photo 8">
         <div class="caption">
-            <h2>可愛的我們</h2>
-            <p>這份愛我們無須在隱藏，勇敢地擁抱與表達對彼此的在意與祝福。</p>
+            <h2>Lovely Us</h2>
+            <p>No more hiding this love. I’m so proud to have you and show the world how much I care.</p>
         </div>
     </div>
 
     <div class="slide bg9">
         <img src="https://truth.bahamut.com.tw/s01/202603/ccb113118e7ebafc29f5ed5a52f62bca.JPG" alt="Photo 9">
         <div class="caption">
-            <h2>紀錄妳的每一個樣子</h2>
-            <p>不管是認真的妳、搞怪的妳，還是微笑的妳，我都想好好的收藏在心底。</p>
+            <h2>Every Version of You</h2>
+            <p>Serious, playful, or smiling—I want to keep every version of you in my heart forever.</p>
         </div>
     </div>
 
     <div class="slide bg10">
         <img src="https://truth.bahamut.com.tw/s01/202603/dcdfc694e74b4077205c6153457ce454.JPG" alt="Photo 10">
         <div class="caption">
-            <h2>跨越距離的思念</h2>
-            <p>雖然大部分的時間我們隔著螢幕，但那份想見妳的心，從來沒有因為距離而減少過。</p>
+            <h2>Love Without Borders</h2>
+            <p>We may be separated by screens, but my love for you never fades, no matter the distance.</p>
         </div>
     </div>
 
     <div class="slide bg11">
         <img src="https://truth.bahamut.com.tw/s01/202603/c676609071c8dc62f136eacb135d95cc.JPG" alt="Photo 11">
         <div class="caption">
-            <h2>機場，又一次重逢</h2>
-            <p>第三次在機場見面，依舊像初見時那樣悸動。謝謝妳，總是張開雙手迎接我的到來。</p>
+            <h2>Airport Reunion</h2>
+            <p>Meeting you for the third time, yet my heart still skips a beat. Thank you for choosing me.</p>
         </div>
     </div>
 
     <div class="slide bg12">
         <img src="https://truth.bahamut.com.tw/s01/202603/71c8710366a49d0a908e39a8f8a14f20.JPG" alt="Photo 12">
         <div class="caption">
-            <h2>沙灘上的慵懶午後</h2>
-            <p>聽著海浪聲，並肩躺在海灘上。不用多餘的言語，只要有妳在身邊，就是最徹底的放鬆。</p>
+            <h2>Beach Day</h2>
+            <p>Listening to waves, lying side by side. Just being with you is the perfect relaxation.</p>
         </div>
     </div>
 
     <div class="slide bg13">
         <img src="https://truth.bahamut.com.tw/s01/202603/87ab78fe60a1a99cdf8133ccb70d2b4e.JPG" alt="Photo 13">
         <div class="caption">
-            <h2>我眼中的世界與妳</h2>
-            <p>世界很大，有無數的風景；但我的世界很小，小到只能裝下一個最特別的妳。</p>
+            <h2>My World is You</h2>
+            <p>The world is vast, but my heart is small—it only has space for one special person: YOU.</p>
         </div>
     </div>
 
     <div class="slide bg14">
         <img src="https://truth.bahamut.com.tw/s01/202603/750ac684ba37234c695152f5c20b079d.JPG" alt="Photo 14">
         <div class="caption">
-            <h2>旅程中的驚喜夥伴</h2>
-            <p>這次的旅行多了一個可愛的小生命，也讓我們留下了更多意想不到的有趣回憶。</p>
+            <h2>A New Friend</h2>
+            <p>This trip gave us a sweet little surprise and memories we will laugh about forever.</p>
         </div>
     </div>
 
     <div class="slide bg15">
         <img src="https://truth.bahamut.com.tw/s01/202603/7008e845d13bed571b805c3f1675c32a.JPG" alt="Photo 15">
         <div class="caption">
-            <h2>寫在腳底下的情書</h2>
-            <p>我們走過的每個足跡，都是這一年相愛的證明。深淺不一，卻都無比堅定。</p>
+            <h2>Our Footprints</h2>
+            <p>Every step we take together is proof of our love. Let’s keep walking this path forever.</p>
         </div>
     </div>
 
     <div class="slide bg16">
         <img src="https://truth.bahamut.com.tw/s01/202603/362f79e9d5fadb61930a49718903e375.JPG" alt="Photo 16">
         <div class="caption">
-            <h2>許下的願望，都有妳</h2>
-            <p>願我們的祈福都能一一實現。願未來的路，我們依然能這樣牽著手，無所畏懼地走下去。</p>
+            <h2>Wishes for Us</h2>
+            <p>May all our prayers come true. I want to hold your hand through everything. <br><b>อยากจับมือคุณเดินไปแบบนี้ตลอดไป</b></p>
         </div>
     </div>
 
     <div class="slide bg17">
         <img src="https://truth.bahamut.com.tw/s01/202603/41ea243fc5776e2dfbdae4c297048212.JPG" alt="Photo 17">
         <div class="caption">
-            <h2>給最閃耀的妳</h2>
-            <p>妳就像陽光般燦爛，用妳的溫柔填滿了我的生活。謝謝妳，讓我的世界從此充滿了繽紛的色彩。</p>
+            <h2>My Sunshine</h2>
+            <p><b>คุณทำให้โลกของผมสดใสและมีความหมาย</b> <br>Thank you for filling my world with light and vibrant colors.</p>
         </div>
     </div>
 
     <div class="slide bg18">
         <div class="caption">
-            <h2 style="font-size: 1.5rem;">To My Dearest</h2>
-            <p>這一年，我們跨越了距離與思念。雖然不容易，但因為對象是妳，這一切都充滿意義。<br><br>一週年快樂，我會一直愛妳 ❤️</p>
+            <h2 style="font-size: 1.5rem;">Happy Anniversary ❤️</h2>
+            <p>One year down, forever to go. <br>
+               <b>สุขสันต์วันครบรอบนะจ๊ะ... รักคุณที่สุด</b>
+            </p>
         </div>
     </div>
 
